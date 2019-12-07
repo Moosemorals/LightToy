@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -16,7 +17,11 @@ namespace LightToy
         static async Task Main(string[] args)
         {
 
-            Fetcher f = new Fetcher();
+
+            string hubIP = ConfigurationManager.AppSettings.Get("hubIP");
+            string hubID = ConfigurationManager.AppSettings.Get("hubID");
+
+            Fetcher f = new Fetcher(hubIP, hubID);
 
 
             JObject lights = await f.GetRules();
