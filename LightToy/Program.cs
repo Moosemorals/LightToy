@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -24,9 +25,15 @@ namespace LightToy
             Fetcher f = new Fetcher(hubIP, hubID);
 
 
-            JObject lights = await f.GetRules();
+            Dictionary<string, Types.Light> lights = await f.GetLights();
 
-            System.Console.WriteLine(lights.ToString());
+            foreach (string id in lights.Keys)
+            {
+                System.Console.WriteLine(id + ": "+ lights[id].Name  + ": " + lights[id].State.On);
+
+                System.Console.WriteLine(JsonConvert.SerializeObject(lights[id].State));
+
+            }
 
 
 

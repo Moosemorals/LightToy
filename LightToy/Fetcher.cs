@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using LightToy.Types;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace LightToy
             }.Uri; 
         }
 
-        internal async Task<JToken> Get(string path)
+        internal async Task<JObject> Get(string path)
         {
             Uri target = BuildUri(path);
             HttpResponseMessage resp = await http.GetAsync(target);
@@ -39,15 +40,14 @@ namespace LightToy
             if (resp.IsSuccessStatusCode)
             {
                 string raw = await resp.Content.ReadAsStringAsync();
-                return JToken.Parse(raw);
+                return JObject.Parse(raw);
             }
 
             throw new FetchException(resp);
         }
 
-        internal async Task<JToken> Post(string path, JObject body)
+        internal async Task<JArray> Post(string path, JObject body)
         {
-
             Uri target = BuildUri(path);
 
             StringContent content = new StringContent(body.ToString());
@@ -56,17 +56,20 @@ namespace LightToy
 
             if (resp.IsSuccessStatusCode)
             {
-                return JToken.Parse(await resp.Content.ReadAsStringAsync());
+                return JArray.Parse(await resp.Content.ReadAsStringAsync());
             }
 
             throw new FetchException(resp);
         }
 
 
-        public async Task<JObject> GetLights()
+        public async Task<Dictionary<string, Light>> GetLights()
         {
-            return await Get("/lights") as JObject;
-        }
+            JObject raw = await Get("/lights");
+
+            return raw.ToObject<Dictionary<string, Light>>();
+
+         }
 
         public async Task<JObject> GetRules()
         {
